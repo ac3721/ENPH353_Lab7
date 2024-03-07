@@ -130,40 +130,53 @@ class Gazebo_Linefollow_Env(gazebo_env.GazeboEnv):
 
         #For stability, take average of 3 row to get centroid
         x_o = []
-        if not(self.first_val(row) == 0 and self.last_val(row) == width):
+        status = False
+        if not(self.first_val(row) == 0 and self.last_val(row) == width-1):
             x_o.append(int(np.mean(x_val)))
-        if not(self.first_val(row1) == 0 and self.last_val(row1) == width):
+            status = True
+        if not(self.first_val(row1) == 0 and self.last_val(row1) == width-1):
             x_o.append(int(np.mean(x_val1)))
-        if not(self.first_val(row1) == 0 and self.last_val(row1) == width):
+            status = True
+        if not(self.first_val(row2) == 0 and self.last_val(row2) == width-1):
             x_o.append(int(np.mean(x_val2)))
-        x = int(np.mean(x_o)) 
+            status = True
+        # if ((self.first_val(row) == 0 and self.last_val(row) == width-1) and (self.first_val(row1) == 0 and self.last_val(row1) == width) and (self.first_val(row2) == 0 and self.last_val(row2) == width)):
+        #     status = False
 
-        if (x < increment):
-            state = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        elif (x < 2 * increment):
-            state = [0, 1, 0, 0, 0, 0, 0, 0, 0, 0]
-        elif (x < 3 * increment):
-            state = [0, 0, 1, 0, 0, 0, 0, 0, 0, 0]
-        elif (x < 4 * increment):
-            state = [0, 0, 0, 1, 0, 0, 0, 0, 0, 0]
-        elif (x < 5 * increment):
-            state = [0, 0, 0, 0, 1, 0, 0, 0, 0, 0]
-        elif (x < 6 * increment):
-            state = [0, 0, 0, 0, 0, 1, 0, 0, 0, 0]
-        elif (x < 7 * increment):
-            state = [0, 0, 0, 0, 0, 0, 1, 0, 0, 0]
-        elif (x < 8 * increment):
-            state = [0, 0, 0, 0, 0, 0, 0, 1, 0, 0]
-        elif (x < 9 * increment):
-            state = [0, 0, 0, 0, 0, 0, 0, 0, 1, 0]
-        elif (x < width):
-            state = [0, 0, 0, 0, 0, 0, 0, 0, 0, 1]
-        else:
+        if (status == False):
             if (self.timeout == 30):
                 done = True
+            else:
+                self.timeout +=1
 
-        if (done == False):
-            cv2.circle(cv_image, (x, height), 1, (0, 0, 255), 30)
+        #print (width, self.first_val(row),self.last_val(row),self.first_val(row1),self.last_val(row1))
+
+        if (status == True):
+            x = int(np.mean(x_o)) 
+            if (x < increment):
+                state = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            elif (x < 2 * increment):
+                state = [0, 1, 0, 0, 0, 0, 0, 0, 0, 0]
+            elif (x < 3 * increment):
+                state = [0, 0, 1, 0, 0, 0, 0, 0, 0, 0]
+            elif (x < 4 * increment):
+                state = [0, 0, 0, 1, 0, 0, 0, 0, 0, 0]
+            elif (x < 5 * increment):
+                state = [0, 0, 0, 0, 1, 0, 0, 0, 0, 0]
+            elif (x < 6 * increment):
+                state = [0, 0, 0, 0, 0, 1, 0, 0, 0, 0]
+            elif (x < 7 * increment):
+                state = [0, 0, 0, 0, 0, 0, 1, 0, 0, 0]
+            elif (x < 8 * increment):
+                state = [0, 0, 0, 0, 0, 0, 0, 1, 0, 0]
+            elif (x < 9 * increment):
+                state = [0, 0, 0, 0, 0, 0, 0, 0, 1, 0]
+            elif (x < width):
+                state = [0, 0, 0, 0, 0, 0, 0, 0, 0, 1]
+
+            if (done == False):
+                cv2.circle(cv_image, (x, height), 1, (0, 0, 255), 30)
+
 
         cv2.imshow("raw", cv_image)
         cv2.waitKey(100)
@@ -186,7 +199,7 @@ class Gazebo_Linefollow_Env(gazebo_env.GazeboEnv):
         vel_cmd = Twist()
 
         if action == 0:  # FORWARD
-            vel_cmd.linear.x = 0.4
+            vel_cmd.linear.x = 0.6
             vel_cmd.angular.z = 0.0
         elif action == 1:  # LEFT
             vel_cmd.linear.x = 0.0

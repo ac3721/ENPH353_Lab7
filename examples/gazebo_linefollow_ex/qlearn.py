@@ -1,7 +1,7 @@
 import random
 import pickle
 
-
+ 
 class QLearn:
     def __init__(self, actions, epsilon, alpha, gamma):
         self.q = {}
@@ -9,21 +9,24 @@ class QLearn:
         self.alpha = alpha      # discount constant
         self.gamma = gamma      # discount factor
         self.actions = actions
+        self.past = []
 
     def loadQ(self, filename):
         '''
         Load the Q state-action values from a pickle file.
         '''
 
-        self.q = pickle.load(filename)
+        # Open the file containing the pickled data
+        file = open(filename, 'rb')
+        self.q = pickle.load(file)
         print("Loaded file: {}".format(filename+".pickle"))
 
     def saveQ(self, filename):
         '''
         Save the Q state-action values in a pickle file.
         '''
-
-        pickle.dump(self.q, filename)
+        with open(filename, 'wb') as file:
+            pickle.dump(self.q, file)
         print("Wrote to file: {}".format(filename+".pickle"))
 
     def getQ(self, state, action):
@@ -51,15 +54,36 @@ class QLearn:
         # NOTE: if return_q is set to True return (action, q) instead of
         #       just action
 
-        
+        maxQ = 0
+        last = 0
+        add = False
+        action = 0
 
+        if (random.random() < self.epsilon):
+            action = random.randint(0, 3)
+        else:
+            for act in range(3):
+                print(act, self.getQ(state, act))
+                if (self.getQ(state, act) > maxQ) :
+                    maxQ = self.getQ(state, act)
+                    last = act
+                elif (self.getQ(state, act) == maxQ):
+                    if (last == 0):
+                        add = True
+                        action = 0
+                    elif (act == 2 and last == 1):
+                        add = True
+                        action = 1
+            if (add == False):
+                action = last
+
+        self.past.append(action)
 
         if (return_q == True):
-            return [action, getQ(self,state,action)]
-
-        # THE NEXT LINES NEED TO BE MODIFIED TO MATCH THE REQUIREMENTS ABOVE 
-
-        return self.actions[1]
+            self.q[(state, action)] = self.getQ(state,action)
+            return (action, self.q([state, action]))
+        else:
+            return action
 
     def learn(self, state1, action1, reward, state2):
         '''
@@ -79,5 +103,14 @@ class QLearn:
         #   rewards
 
         # THE NEXT LINES NEED TO BE MODIFIED TO MATCH THE REQUIREMENTS ABOVE
+        self.q[(state1,action1)] = reward
 
-        self.q[(state1,action1)] = self.alpha * (reward(state1, action1) + self.gamma *
+        currentQ = self.getQ(state1, action1)
+
+        maxQ = 0
+        for act in range(3):
+            if (self.getQ(state2, act) > maxQ) :
+                maxQ = self.getQ(state2, act)
+
+
+        self.q[(state1,action1)] += self.alpha * (reward + self.gamma * maxQ -currentQ)
