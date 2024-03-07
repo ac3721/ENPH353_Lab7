@@ -6,6 +6,7 @@ import time
 import numpy
 import random
 import time
+import pickle
 
 import qlearn
 import liveplot
@@ -87,7 +88,6 @@ if __name__ == '__main__':
 
         if highest_reward < cumulated_reward:
                 highest_reward = cumulated_reward
-                .loadQ
 
         if (x > 0) and (x % 5 == 0):
             qlearn.saveQ("QValues")

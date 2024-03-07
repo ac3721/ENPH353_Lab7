@@ -58,9 +58,12 @@ class QLearn:
         last = 0
         add = False
         action = 0
+        ran = random.random()
 
-        if (random.random() < self.epsilon):
+        if (ran < self.epsilon):
             action = random.randint(0, 3)
+            print(ran, "ran", action)
+
         else:
             for act in range(3):
                 print(act, self.getQ(state, act))
