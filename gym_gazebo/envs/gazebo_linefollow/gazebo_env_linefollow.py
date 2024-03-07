@@ -199,14 +199,14 @@ class Gazebo_Linefollow_Env(gazebo_env.GazeboEnv):
         vel_cmd = Twist()
 
         if action == 0:  # FORWARD
-            vel_cmd.linear.x = 0.6
+            vel_cmd.linear.x = 1
             vel_cmd.angular.z = 0.0
         elif action == 1:  # LEFT
-            vel_cmd.linear.x = 0.0
-            vel_cmd.angular.z = 0.5
+            vel_cmd.linear.x = 0.4
+            vel_cmd.angular.z = 0.4
         elif action == 2:  # RIGHT
-            vel_cmd.linear.x = 0.0
-            vel_cmd.angular.z = -0.5
+            vel_cmd.linear.x = 0.4
+            vel_cmd.angular.z = -0.4
 
         self.vel_pub.publish(vel_cmd)
 
@@ -230,7 +230,7 @@ class Gazebo_Linefollow_Env(gazebo_env.GazeboEnv):
         # Set the rewards for your action
         if not done:
             if action == 0:  # FORWARD
-                reward = 4
+                reward = 3
             elif action == 1:  # LEFT
                 reward = 3
             else:

@@ -9,7 +9,6 @@ class QLearn:
         self.alpha = alpha      # discount constant
         self.gamma = gamma      # discount factor
         self.actions = actions
-        self.past = []
 
     def loadQ(self, filename):
         '''
@@ -61,9 +60,7 @@ class QLearn:
         ran = random.random()
 
         if (ran < self.epsilon):
-            action = random.randint(0, 3)
-            print(ran, "ran", action)
-
+            action = random.randint(0, 2)
         else:
             for act in range(3):
                 print(act, self.getQ(state, act))
@@ -71,16 +68,17 @@ class QLearn:
                     maxQ = self.getQ(state, act)
                     last = act
                 elif (self.getQ(state, act) == maxQ):
-                    if (last == 0):
-                        add = True
-                        action = 0
-                    elif (act == 2 and last == 1):
+                    if (last == 1 or act == 1):
                         add = True
                         action = 1
+                    elif (act == 2 and last == 0):
+                        add = True
+                        action = 0
             if (add == False):
                 action = last
-
-        self.past.append(action)
+                add = True
+        if (add == True):        
+            print(action, "action", state)
 
         if (return_q == True):
             self.q[(state, action)] = self.getQ(state,action)
@@ -106,14 +104,61 @@ class QLearn:
         #   rewards
 
         # THE NEXT LINES NEED TO BE MODIFIED TO MATCH THE REQUIREMENTS ABOVE
-        self.q[(state1,action1)] = reward
-
-        currentQ = self.getQ(state1, action1)
+        #self.q[(state1,action1)] = reward
 
         maxQ = 0
         for act in range(3):
             if (self.getQ(state2, act) > maxQ) :
                 maxQ = self.getQ(state2, act)
+                currentQ = self.getQ(state1, action1)
+            if (self.getQ(state2, act) == 0):
+                self.q[(state1,action1)] = reward
+                currentQ = reward
+                if (act == 1):
+                    if (state2[0] == 1) :
+                        maxQ = 3
+                    if (state2[1] == 1) :
+                        maxQ = 2
+                    if (state2[2] == 1):
+                        maxQ = 2
+                if (act == 0):
+                    if (state2[3] == 1) :
+                        maxQ = 2
+                    if (state2[4] == 1) :
+                        maxQ = 3
+                    if (state2[5] == 1):
+                        maxQ = 3
+                    if (state2[6] == 1):
+                        maxQ = 2
+                if (act == 2):
+                    if (state2[9] == 1) :
+                        maxQ = 3
+                    if (state2[8] == 1) :
+                        maxQ = 2
+                    if (state2[7] == 1):
+                        maxQ = 2
 
+        
+        self.q[(state1,action1)] = reward + self.alpha * (reward + self.gamma * maxQ -self.getQ(state1, action1))
+        #print(currentQ, "current", maxQ, "max",self.q[(state1,action1)])
 
-        self.q[(state1,action1)] += self.alpha * (reward + self.gamma * maxQ -currentQ)
+    def savePolicy(self, filename):
+        '''
+        Save the epsilon, gamma, and alpha in a pickle file.
+        '''
+        data = [self.epsilon, self.gamma, self.alpha]
+
+        with open(filename, 'wb') as file:
+            pickle.dump(data, file)
+        print("Wrote to file: {}".format(filename+".pickle"))
+
+    
+    def loadPolicy(self, filename):
+        '''
+        Load the epsilon, gamma, and alpha from a pickle file.
+
+        '''
+        file = open(filename, 'rb')
+        self.epsilon, self.gamma, self.alpha = pickle.load(file)
+        print("Loaded file: {}".format(filename+".pickle"))
+

@@ -88,8 +88,10 @@ if __name__ == '__main__':
 
         if highest_reward < cumulated_reward:
                 highest_reward = cumulated_reward
+                # print(highest_reward,"update", cumulated_reward)
+                qlearn.savePolicy("bestPolicy")
 
-        if (x > 0) and (x % 5 == 0):
+        if (x > 0) and (x % 2 == 0):
             qlearn.saveQ("QValues")
             plotter.plot(env)
 
