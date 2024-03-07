@@ -144,7 +144,7 @@ class Gazebo_Linefollow_Env(gazebo_env.GazeboEnv):
         #     status = False
 
         if (status == False):
-            if (self.timeout == 30):
+            if (self.timeout == 3):
                 done = True
             else:
                 self.timeout +=1

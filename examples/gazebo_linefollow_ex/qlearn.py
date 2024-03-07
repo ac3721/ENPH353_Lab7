@@ -53,7 +53,7 @@ class QLearn:
         # NOTE: if return_q is set to True return (action, q) instead of
         #       just action
 
-        maxQ = 0
+        maxQ = -500
         last = 0
         add = False
         action = 0
@@ -63,11 +63,11 @@ class QLearn:
             action = random.randint(0, 2)
         else:
             for act in range(3):
-                print(act, self.getQ(state, act))
+                #print(act, self.getQ(state, act))
                 if (self.getQ(state, act) > maxQ) :
                     maxQ = self.getQ(state, act)
                     last = act
-                elif (self.getQ(state, act) == maxQ):
+                elif (self.getQ(state, act) == 0):
                     if (last == 1 or act == 1):
                         add = True
                         action = 1
@@ -77,8 +77,8 @@ class QLearn:
             if (add == False):
                 action = last
                 add = True
-        if (add == True):        
-            print(action, "action", state)
+        # if (add == True):        
+        #     print(action, "action", state)
 
         if (return_q == True):
             self.q[(state, action)] = self.getQ(state,action)
@@ -106,29 +106,28 @@ class QLearn:
         # THE NEXT LINES NEED TO BE MODIFIED TO MATCH THE REQUIREMENTS ABOVE
         #self.q[(state1,action1)] = reward
 
-        maxQ = 0
+        maxQ = -500
         for act in range(3):
             if (self.getQ(state2, act) > maxQ) :
                 maxQ = self.getQ(state2, act)
                 currentQ = self.getQ(state1, action1)
             if (self.getQ(state2, act) == 0):
-                self.q[(state1,action1)] = reward
-                currentQ = reward
+                #self.q[(state1,action1)] = reward
                 if (act == 1):
-                    if (state2[0] == 1) :
+                    if (state2[0] == '1') :
                         maxQ = 3
-                    if (state2[1] == 1) :
+                    if (state2[1] == '1') :
                         maxQ = 2
-                    if (state2[2] == 1):
+                    if (state2[2] == '1'):
                         maxQ = 2
                 if (act == 0):
-                    if (state2[3] == 1) :
+                    if (state2[3] == '1') :
                         maxQ = 2
-                    if (state2[4] == 1) :
+                    if (state2[4] == '1') :
                         maxQ = 3
-                    if (state2[5] == 1):
+                    if (state2[5] == '1'):
                         maxQ = 3
-                    if (state2[6] == 1):
+                    if (state2[6] == '1'):
                         maxQ = 2
                 if (act == 2):
                     if (state2[9] == 1) :
@@ -139,7 +138,7 @@ class QLearn:
                         maxQ = 2
 
         
-        self.q[(state1,action1)] = reward + self.alpha * (reward + self.gamma * maxQ -self.getQ(state1, action1))
+        self.q[(state1,action1)] = self.getQ(state1, action1) + self.alpha * (reward + self.gamma * maxQ -self.getQ(state1, action1))
         #print(currentQ, "current", maxQ, "max",self.q[(state1,action1)])
 
     def savePolicy(self, filename):
